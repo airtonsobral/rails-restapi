@@ -7,6 +7,7 @@
       <small>
         <%= param[:required] ? 'required' : 'optional' %>
         <%= param[:allow_nil] ? ', nil allowed' : '' %>
+        <%= param[:inline] ? '(inline)' : '' %>
       </small>
     </td>
     <td>

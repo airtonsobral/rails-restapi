@@ -5,10 +5,11 @@ module Restapi
   # name - method name (show)
   # desc - description
   # required - boolean if required
+  # inline - boolean if the parameter is used inline on a URL (ex: /malls?something=12)
   # validator - Validator::BaseValidator subclass
   class ParamDescription
 
-    attr_reader :name, :desc, :required, :allow_nil, :validator
+    attr_reader :name, :desc, :required, :allow_nil, :inline, :validator
 
     attr_accessor :parent
     
@@ -24,6 +25,7 @@ module Restapi
       @name = name
       @desc = Restapi.markup_to_html(options[:desc] || '')
       @required = options[:required] || false
+      @inline = options[:inline] || false
       @allow_nil = options[:allow_nil] || false
       
       @validator = nil
@@ -64,6 +66,7 @@ module Restapi
           :full_name => full_name,
           :description => desc,
           :required => required,
+          :inline => inline,
           :allow_nil => allow_nil,
           :validator => validator.to_s,
           :expected_type => validator.expected_type,
@@ -75,6 +78,7 @@ module Restapi
           :full_name => full_name,
           :description => desc,
           :required => required,
+          :inline => inline,
           :allow_nil => allow_nil,
           :validator => validator.to_s,
           :expected_type => validator.expected_type

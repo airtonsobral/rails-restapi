@@ -165,7 +165,7 @@ module Restapi
         end
         return {param[:name] => childs_hash_merged}
       else
-        return {param[:name] => param[:expected_type]}
+        return param[:inline] ? {} : {param[:name] => param[:expected_type]}
       end
     end
 
