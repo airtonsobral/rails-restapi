@@ -29,7 +29,7 @@
            class='accordion-toggle'
            data-toggle='collapse'
            data-parent='#accordion'>
-            <%= api[:http_method] %> <%= api[:api_url] %>
+            <%= api[:http_method] %> <%= api[:api_url] %><%= m[:inline_params_suffix] %> 
           </a><br>
           <small><%= raw api[:short_description] %></small>
         </h2>
