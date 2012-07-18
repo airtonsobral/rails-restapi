@@ -35,11 +35,14 @@ module Restapi
       
       # Here the blank apis are filled with data extracted from the routes.rb.
       def self.update_blank_apis(apis, controller, method)
-        route = Restapi.routes_by_controller[controller][method]
-        apis.each do |api|
-          if api.api_url.blank? && api.http_method.blank?
-            api.api_url = route[:path]
-            api.http_method = route[:http_method]
+        controller_routes = Restapi.routes_by_controller[controller]
+        if controller_routes
+          route = controller_routes[method]
+          apis.each do |api|
+            if api.api_url.blank? && api.http_method.blank?
+              api.api_url = route[:path]
+              api.http_method = route[:http_method]
+            end
           end
         end
       end
