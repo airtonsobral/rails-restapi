@@ -36,7 +36,8 @@
   <% unless @method[:errors].blank? %>
     <h2>Errors</h2>
     <% @method[:errors].each do |err| %>
-      <%= err.code %>
+      <b><%= err.code %></b>
+      -
       <%= err.description %>
       <br>
     <% end %>
