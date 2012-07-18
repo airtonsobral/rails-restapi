@@ -13,9 +13,13 @@ module Restapi
         raise ArgumentError "RestapiError: Bad use of error method."
       end
       @code = args[:code] || args['code']
-      @description = args[:desc] || args[:description] || args['desc'] || args['description']
+      if defined?(Errors)
+        @description = Errors.desc(@code)
+      else
+        @description = args[:desc] || args[:description] || args['desc'] || args['description']
+      end
     end
-
+    
   end
-
+  
 end
