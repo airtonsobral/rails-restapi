@@ -91,7 +91,17 @@ module Restapi
     #
     def param(param_name, *args, &block) #:doc:
       return unless Restapi.active_dsl?
-      Restapi.last_params << Restapi::ParamDescription.new(param_name, *args, &block)
+      Restapi.last_params << Restapi::ParamDescription.new(param_name, *args << :request, &block)
+    end
+    
+    def request_param(param_name, *args, &block) #:doc:
+      return unless Restapi.active_dsl?
+      Restapi.last_params << Restapi::ParamDescription.new(param_name, *args << :request, &block)
+    end
+    
+    def response_param(param_name, *args, &block) #:doc:
+      return unless Restapi.active_dsl?
+      Restapi.last_params << Restapi::ParamDescription.new(param_name, *args << :response, *args, &block)
     end
 
     # create method api and redefine newly added method

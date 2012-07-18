@@ -9,17 +9,18 @@ module Restapi
   # validator - Validator::BaseValidator subclass
   class ParamDescription
 
-    attr_reader :name, :desc, :required, :allow_nil, :inline, :validator
+    attr_reader :name, :desc, :required, :allow_nil, :type, :inline, :validator
 
     attr_accessor :parent
     
     def initialize(name, *args, &block)
-
+      
       if args.size > 1 || !args.first.is_a?(Hash)
         validator_type = args.shift || nil
       else
         validator_type = nil
       end
+      @type = args.pop
       options = args.pop || {}
       
       @name = name
@@ -64,6 +65,7 @@ module Restapi
         {
           :name => name.to_s,
           :full_name => full_name,
+          :type => type,
           :description => desc,
           :required => required,
           :inline => inline,
@@ -76,6 +78,7 @@ module Restapi
         {
           :name => name.to_s,
           :full_name => full_name,
+          :type => type,
           :description => desc,
           :required => required,
           :inline => inline,

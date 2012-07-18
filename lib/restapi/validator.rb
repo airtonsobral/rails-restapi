@@ -211,7 +211,7 @@ module Restapi
       end
 
       def param(param_name, *args, &block)
-        param_description = Restapi::ParamDescription.new(param_name, *args, &block)
+        param_description = Restapi::ParamDescription.new(param_name, *args << @param_description.type, &block)
         param_description.parent = self.param_description
         @hash_params_ordered << param_description
         @hash_params[param_name.to_sym] = param_description
