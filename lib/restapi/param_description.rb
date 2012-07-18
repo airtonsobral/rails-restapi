@@ -9,7 +9,7 @@ module Restapi
   # validator - Validator::BaseValidator subclass
   class ParamDescription
 
-    attr_reader :name, :desc, :required, :allow_nil, :type, :inline, :validator
+    attr_reader :name, :desc, :required, :allow_nil, :type, :inline, :hash_array_container, :validator
 
     attr_accessor :parent
     
@@ -28,6 +28,7 @@ module Restapi
       @required = options[:required] || false
       @inline = options[:inline] || false
       @allow_nil = options[:allow_nil] || false
+      @hash_array_container = options[:hash_array_container] || false
       
       @validator = nil
       unless validator_type.nil?
@@ -46,6 +47,11 @@ module Restapi
 
     def full_name
       name_parts = parents_and_self.map(&:name)
+      if parent && parent.hash_array_container
+        top = name_parts.pop
+        name_parts << ""
+        name_parts << top
+      end
       return ([name_parts.first] + name_parts[1..-1].map { |n| "[#{n}]" }).join("")
     end
 
@@ -70,6 +76,7 @@ module Restapi
           :required => required,
           :inline => inline,
           :allow_nil => allow_nil,
+          :hash_array_container => hash_array_container,
           :validator => validator.to_s,
           :expected_type => validator.expected_type,
           :params => validator.hash_params_ordered.map(&:to_json)
@@ -83,6 +90,7 @@ module Restapi
           :required => required,
           :inline => inline,
           :allow_nil => allow_nil,
+          :hash_array_container => hash_array_container,
           :validator => validator.to_s,
           :expected_type => validator.expected_type
         }

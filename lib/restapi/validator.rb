@@ -222,7 +222,6 @@ module Restapi
       end
     end
 
-
     # special type of validator: we say that it's not specified
     class UndefValidator < Restapi::Validator::BaseValidator
 

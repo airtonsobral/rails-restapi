@@ -212,7 +212,11 @@ module Restapi
         param[:params].each do |param_child|
           childs_hash_merged.merge!(param_to_simple_hash(param_child))
         end
-        return {param[:name] => childs_hash_merged}
+        if param[:hash_array_container]
+          return {param[:name] => [childs_hash_merged, childs_hash_merged]}
+        else
+          return {param[:name] => childs_hash_merged}
+        end
       else
         return param[:inline] ? {} : {param[:name] => param[:expected_type]}
       end
