@@ -1,11 +1,20 @@
 require "restapi/helpers"
 require "restapi/application"
+require "restapi/routes"
 
 module Restapi
   extend Restapi::Helpers
-
+  
   def self.app
     @application ||= Restapi::Application.new
+  end
+  
+  def self.routes_by_controller
+    @routes_by_controller ||= Restapi::Routes.new.mount({:rails_routes => Rails.application.routes.routes, :by => :controller})
+  end
+  
+  def self.routes_by_name
+    @routes_by_name ||= Restapi::Routes.new.mount({:rails_routes => Rails.application.routes.routes, :by => :name})
   end
   
   def self.to_json(resource_name = nil, method_name = nil)
@@ -24,10 +33,10 @@ module Restapi
   def self.configuration
     @configuration ||= Configuration.new
   end
-
+  
   class Configuration
     attr_accessor :app_name, :app_info, :copyright, :markup,
-      :validate, :api_base_url, :doc_base_url
+      :validate, :api_base_url, :doc_base_url, :routes
 
     alias_method :validate?, :validate
 

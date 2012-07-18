@@ -7,10 +7,41 @@ module Restapi
       
       attr_accessor :short_description, :api_url, :http_method
       
-      def initialize(method, path, desc)
-        @http_method = method.to_s
-        @api_url = create_api_url(path)
-        @short_description = desc
+      def initialize(params)
+        method = params[:method]
+        path = params[:path]
+        desc = params[:short_desc]
+        
+        if path
+          if path.is_a? Symbol
+            route = Restapi.routes_by_name[path]
+            @api_url = route[:path]
+            @http_method = route[:http_method]
+            @short_description = desc
+          else
+            @api_url = create_api_url(path)
+            @http_method = method.to_s
+            @short_description = desc
+          end
+        else
+          # There is no way to use the controller name and method name in this scope.
+          # Because of that, the http_method and api_url is going to be updated when
+          # the method_description is initialized (calling the update_blank_apis)
+          @api_url = nil
+          @http_method = nil
+          @short_description = desc
+        end
+      end
+      
+      # Here the blank apis are filled with data extracted from the routes.rb.
+      def self.update_blank_apis(apis, controller, method)
+        route = Restapi.routes_by_controller[controller][method]
+        apis.each do |api|
+          if api.api_url.blank? && api.http_method.blank?
+            api.api_url = route[:path]
+            api.http_method = route[:http_method]
+          end
+        end
       end
       
       private
@@ -27,7 +58,8 @@ module Restapi
       @method = method
       @resource = resource
       
-      @apis = app.get_api_args
+      @apis = Restapi::MethodDescription::Api.update_blank_apis(app.get_api_args, @resource.controller.to_s, method)
+      
       @see = app.get_see
      
       desc = app.get_description || ''

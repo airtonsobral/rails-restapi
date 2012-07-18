@@ -24,11 +24,11 @@ module Restapi
     # Declare an api.
     #
     # Example:
-    #   api :GET, "/resource_route", "short description",
+    #   api :GET, "/resource_route", "short description"
     #
-    def api(method, path, desc = nil) #:doc:
+    def api(params = {}) #:doc:
       return unless Restapi.active_dsl?
-      Restapi.add_method_description_args(method, path, desc)
+      Restapi.add_method_description_args(params)
     end
 
     # Describe the next method.
