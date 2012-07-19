@@ -5,44 +5,38 @@ module Restapi
   
     class Api
       
-      attr_accessor :short_description, :api_url, :http_method
+      attr_accessor :short_description, :api_url, :http_method, :need_update, :route_name
       
       def initialize(params)
         method = params[:method]
         path = params[:path]
-        desc = params[:short_desc]
+        @short_description = params[:short_desc]
         
+        # There is no way to use routes right on the Api initialization, because
+        # of the class caching on production.
+        # Because of that, the http_method and api_url is going to be updated when
+        # the method_description json is firstly generated (calling the updated_apis)
         if path
-          if path.is_a? Symbol
-            route = Restapi.routes_by_name[path]
-            @api_url = route[:path]
-            @http_method = route[:http_method]
-            @short_description = desc
+          if path.is_a?(Symbol)
+            @route_name = path
+            @need_update = true
           else
             @api_url = create_api_url(path)
-            @http_method = method.to_s
-            @short_description = desc
+            @http_method = method.to_s  
           end
         else
-          # There is no way to use the controller name and method name in this scope.
-          # Because of that, the http_method and api_url is going to be updated when
-          # the method_description is initialized (calling the update_blank_apis)
-          @api_url = nil
-          @http_method = nil
-          @short_description = desc
+          @need_update = true
         end
       end
       
       # Here the blank apis are filled with data extracted from the routes.rb.
-      def self.update_blank_apis(apis, controller, method)
-        controller_routes = Restapi.routes_by_controller[controller]
-        if controller_routes
-          route = controller_routes[method]
-          apis.each do |api|
-            if api.api_url.blank? && api.http_method.blank?
-              api.api_url = route[:path]
-              api.http_method = route[:http_method]
-            end
+      def self.updated_apis(apis, controller, method)
+        apis.each do |api|
+          if api.need_update
+            route = api.route_name.blank? ? Restapi.routes_by_controller[controller][method] : Restapi.routes_by_name[api.route_name]
+            api.api_url = route[:path]
+            api.http_method = route[:http_method]
+            api.need_update = false
           end
         end
       end
@@ -60,9 +54,7 @@ module Restapi
     def initialize(method, resource, app)
       @method = method
       @resource = resource
-      
-      @apis = Restapi::MethodDescription::Api.update_blank_apis(app.get_api_args, @resource.controller.to_s, method)
-      
+      @apis = app.get_api_args
       @see = app.get_see
      
       desc = app.get_description || ''
@@ -112,7 +104,7 @@ module Restapi
     end
 
     def method_apis_to_json
-      @apis.each.collect do |api|
+      Restapi::MethodDescription::Api.updated_apis(@apis, @resource.controller.to_s, @method).each.collect do |api|
         {
           :api_url => api.api_url,
           :http_method => api.http_method.to_s,
