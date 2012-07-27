@@ -34,9 +34,13 @@ module Restapi
         apis.each do |api|
           if api.need_update
             route = api.route_name.blank? ? Restapi.routes_by_controller[controller][method] : Restapi.routes_by_name[api.route_name]
-            api.api_url = route[:path]
-            api.http_method = route[:http_method]
-            api.need_update = false
+            if route
+              api.api_url = route[:path]
+              api.http_method = route[:http_method]
+              api.need_update = false
+            else
+              puts "RailsRestAPI Warning - There was a problem finding the route for api: #{api.to_json}"
+            end
           end
         end
       end
