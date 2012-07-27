@@ -28,7 +28,8 @@
           <a href='#description-<%= m[:name] %>'
            class='accordion-toggle'
            data-toggle='collapse'
-           data-parent='#accordion'>
+           data-parent='#accordion'
+           style="word-wrap: break-word;">
             <%= api[:http_method] %> <%= api[:api_url] %><%= m[:inline_params_suffix] %> 
           </a><br>
           <small><%= raw api[:short_description] %></small>
