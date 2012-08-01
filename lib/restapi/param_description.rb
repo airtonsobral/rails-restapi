@@ -71,7 +71,7 @@ module Restapi
     def auto_load_params(name, block)
       begin
         extra_block = Proc.new {
-          model_class = name.to_s.camelize.constantize
+          model_class = name.to_s.camelize.singularize.constantize
           model_class.columns.each do |c|
             name = c.name
             begin
