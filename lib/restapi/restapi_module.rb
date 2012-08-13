@@ -36,7 +36,7 @@ module Restapi
   
   class Configuration
     attr_accessor :app_name, :app_info, :copyright, :markup,
-      :validate, :api_base_url, :doc_base_url, :routes
+      :validate, :api_base_url, :doc_base_url, :routes, :code_examples_path
 
     alias_method :validate?, :validate
 
