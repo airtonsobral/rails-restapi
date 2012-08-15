@@ -4,11 +4,14 @@
 
 <div><%= @doc[:info].html_safe %></div>
 
-<h1 class='page-header'>Resources</h1>
+<h1 class='page-header'><%= @doc[:resources].length %> Resources, 
+  <%= @doc[:resources].inject(0) {|sum, res| sum + res[1][:methods].length} %> Methods
+</h1>
+
 
 <% @doc[:resources].sort_by(&:first).each do |key, api| %>
   <h2>
-    <a href='<%= api[:doc_url] %>.html'><%= api[:name] %></a><br>
+    <a href='<%= api[:doc_url] %>.html'><%= api[:name] %></a> (<%= api[:methods].length %>)<br>
     <small><%= api[:short_description] %></small>
   </h2>
   <table class='table'>
