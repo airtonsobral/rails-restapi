@@ -30,7 +30,7 @@ module Restapi
       @allow_nil = options[:allow_nil] || false
       @hash_array_container = options[:hash_array_container] || false
       
-      block = auto_load_params(name, block) if options[:auto_load_params]
+      block = auto_load_params(name, options[:auto_load_params], block) if options[:auto_load_params]
       
       @validator = nil
       unless validator_type.nil?
@@ -68,18 +68,25 @@ module Restapi
       ret
     end
     
-    def auto_load_params(name, block)
+    def auto_load_params(name, option, block)
       begin
         extra_block = Proc.new {
-          model_class = name.to_s.camelize.singularize.constantize
-          model_class.columns.each do |c|
-            name = c.name
-            begin
-              type = c.type.to_s.camelize.constantize
-            rescue
-              type = String
+          if option
+            model_class = name.to_s.camelize.singularize.constantize
+            if option == true
+              attrs = model_class.columns
+            else
+              attrs = model_class.send option
             end
-            param name, type, :desc => name
+            attrs.each do |c|
+              name = c.name
+              begin
+                type = c.type.to_s.camelize.constantize
+              rescue
+                type = String
+              end
+              param name, type, :desc => name
+            end
           end
         }
         block_temp = block
